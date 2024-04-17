@@ -15,11 +15,17 @@ def get_restaurants():
         raise Exception(response.reason)
     return response.json()
 
+def display_resturants(restaurants):
+    for i in range(0, 10):
+        print(restaurants[i]["name"])
+        print(restaurants[i]["address"])
+        print(restaurants[i]["rating"]['starRating'])
+        print(restaurants[i]["cuisines"])
+        print()
+
 if __name__ == "__main__":
     restaurant_data = get_restaurants()
     # print(restaurant_data.keys())
     # print(restaurant_data["restaurants"][0].keys())
-    print(restaurant_data["restaurants"][0]["name"])
-    print(restaurant_data["restaurants"][0]["address"])
-    print(restaurant_data["restaurants"][0]["rating"])
-    print(restaurant_data["restaurants"][0]["cuisines"])
+
+    display_resturants(restaurant_data["restaurants"])
