@@ -12,7 +12,14 @@ def get_restaurants():
     if response.status_code != 200:
         print("Error code: ", response.status_code)
         print("Error message: ", response.reason)
-    # print(response.json())
+        raise Exception(response.reason)
+    return response.json()
 
 if __name__ == "__main__":
-    get_restaurants()
+    restaurant_data = get_restaurants()
+    # print(restaurant_data.keys())
+    # print(restaurant_data["restaurants"][0].keys())
+    print(restaurant_data["restaurants"][0]["name"])
+    print(restaurant_data["restaurants"][0]["address"])
+    print(restaurant_data["restaurants"][0]["rating"])
+    print(restaurant_data["restaurants"][0]["cuisines"])
