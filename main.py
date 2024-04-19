@@ -1,9 +1,10 @@
 import requests
+import json
 
 POST_CODE = "CF118AZ"
 URL = f"https://uk.api.just-eat.io/discovery/uk/restaurants/enriched/bypostcode/{POST_CODE}"
 
-def get_restaurants():
+def get_data():
     print(URL)
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
@@ -17,15 +18,25 @@ def get_restaurants():
 
 def display_resturants(restaurants):
     for i in range(0, 10):
-        print(restaurants[i]["name"])
-        print(restaurants[i]["address"])
-        print(restaurants[i]["rating"]['starRating'])
-        print(restaurants[i]["cuisines"])
+        print("Name: " + restaurants[i]["name"])
+
+        firstLine = restaurants[i]["address"]['firstLine']
+        postcode = restaurants[i]["address"]['postalCode']
+        city = restaurants[i]["address"]['city']
+        print("Address: " + firstLine + ", " + postcode + ", " + city)
+
+        rating = restaurants[i]["rating"]['starRating']
+        count = restaurants[i]["rating"]['count']
+        print(f"Rating: {rating} ({count} reviews)")
+
+        cuisineNames = [cuisine['name'] for cuisine in restaurants[i]["cuisines"]]
+        print("Cuisines: " + ", ".join(cuisineNames))
+
         print()
 
 if __name__ == "__main__":
-    restaurant_data = get_restaurants()
-    # print(restaurant_data.keys())
-    # print(restaurant_data["restaurants"][0].keys())
-
-    display_resturants(restaurant_data["restaurants"])
+    all_data = get_data()
+    # print(all_data.keys())
+    # print(all_data['restaurants'][0].keys())
+    display_resturants(all_data["restaurants"])
+    print(all_data['restaurants'][0]['address'].keys())
