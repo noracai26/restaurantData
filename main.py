@@ -1,4 +1,5 @@
 import requests
+from prettytable import PrettyTable
 
 POST_CODE = "CF118AZ"
 URL = f"https://uk.api.just-eat.io/discovery/uk/restaurants/enriched/bypostcode/{POST_CODE}"
@@ -20,35 +21,39 @@ def get_data():
         raise Exception(response.reason)
     return response.json()
 
+def extract_info(restaurant, table):
+    # Extracting name
+    name = restaurant["name"]
+    # Extracting address
+    first_line = restaurant["address"]['firstLine'].replace("\n", ", ")
+    postcode = restaurant["address"]['postalCode']
+    city = restaurant["address"]['city']
+    address = f"{first_line}, {postcode}, {city}"
+    # Extracting rating
+    rating = float(restaurant["rating"]['starRating'])
+    count = restaurant["rating"]['count']
+    if rating >= 4:
+        color_rating = f"{GREEN}{rating}{RESET}"
+    elif 3 <= rating < 4:
+        color_rating = f"{ORANGE}{rating}{RESET}"
+    else:
+        color_rating = f"{RED}{rating}{RESET}"
+    rating_with_reviews = f"{color_rating} ({count} reviews)"
+    # Extracting cuisine
+    cuisine_names = ", ".join([cuisine['name'] for cuisine in restaurant["cuisines"]])
+
+    # Add a row for each restaurant
+    table.add_row([name, rating_with_reviews, cuisine_names, address])
+
 def display_resturants(restaurants):
+    table = PrettyTable()
+    table.field_names = ["Name", "Ratings", "Cuisines", "Address"]
+    table.align = "l"
+
     for i in range(0, 10):
-        # Print name
-        name = restaurants[i]["name"]
-        print(f"{'Name':<10} : {name}")
+        extract_info(restaurants[i], table)
 
-        # Print address
-        first_line = restaurants[i]["address"]['firstLine'].replace("\n", ", ")
-        postcode = restaurants[i]["address"]['postalCode']
-        city = restaurants[i]["address"]['city']
-        address = f"{first_line}, {postcode}, {city}"
-        print(f"{'Address':<10} : {address}")
-
-        # Print rating
-        rating = restaurants[i]["rating"]['starRating']
-        count = restaurants[i]["rating"]['count']
-        if rating >= 4:
-            color = GREEN
-        elif 3.5 <= rating < 4:
-            color = ORANGE
-        else:
-            color = RED
-        print(f"{'Rating':<10} : {color}{rating}{RESET} ({count} reviews)")
-
-        # Print cuisines
-        cuisine_names = ", ".join([cuisine['name'] for cuisine in restaurants[i]["cuisines"]])
-        print(f"{'Cuisines':<10} : {cuisine_names}")
-
-        print()
+    print(table)
 
 if __name__ == "__main__":
     all_data = get_data()
