@@ -1,8 +1,12 @@
 import requests
-import json
 
 POST_CODE = "CF118AZ"
 URL = f"https://uk.api.just-eat.io/discovery/uk/restaurants/enriched/bypostcode/{POST_CODE}"
+
+GREEN = '\033[92m'
+ORANGE = '\033[38;5;208m'
+RED = '\033[91m'
+RESET = '\033[0m'
 
 def get_data():
     print(URL)
@@ -18,25 +22,34 @@ def get_data():
 
 def display_resturants(restaurants):
     for i in range(0, 10):
-        print("Name: " + restaurants[i]["name"])
+        # Print name
+        name = restaurants[i]["name"]
+        print(f"{'Name':<10} : {name}")
 
-        firstLine = restaurants[i]["address"]['firstLine']
+        # Print address
+        first_line = restaurants[i]["address"]['firstLine'].replace("\n", ", ")
         postcode = restaurants[i]["address"]['postalCode']
         city = restaurants[i]["address"]['city']
-        print("Address: " + firstLine + ", " + postcode + ", " + city)
+        address = f"{first_line}, {postcode}, {city}"
+        print(f"{'Address':<10} : {address}")
 
+        # Print rating
         rating = restaurants[i]["rating"]['starRating']
         count = restaurants[i]["rating"]['count']
-        print(f"Rating: {rating} ({count} reviews)")
+        if rating >= 4:
+            color = GREEN
+        elif 3.5 <= rating < 4:
+            color = ORANGE
+        else:
+            color = RED
+        print(f"{'Rating':<10} : {color}{rating}{RESET} ({count} reviews)")
 
-        cuisineNames = [cuisine['name'] for cuisine in restaurants[i]["cuisines"]]
-        print("Cuisines: " + ", ".join(cuisineNames))
+        # Print cuisines
+        cuisine_names = ", ".join([cuisine['name'] for cuisine in restaurants[i]["cuisines"]])
+        print(f"{'Cuisines':<10} : {cuisine_names}")
 
         print()
 
 if __name__ == "__main__":
     all_data = get_data()
-    # print(all_data.keys())
-    # print(all_data['restaurants'][0].keys())
     display_resturants(all_data["restaurants"])
-    print(all_data['restaurants'][0]['address'].keys())
