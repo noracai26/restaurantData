@@ -49,6 +49,8 @@ def display_resturants(restaurants):
     table = PrettyTable()
     table.field_names = ["Name", "Ratings", "Cuisines", "Address"]
     table.align = "l"
+    table._max_width = {"Name": 20, "Address": 40, "Rating": 15, "Cuisines": 30}
+    table.hrules = 1
 
     for i in range(0, 10):
         extract_info(restaurants[i], table)
